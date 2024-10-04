@@ -1,4 +1,4 @@
-package com.example.lab_1;
+package com.myapp.originalapp;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

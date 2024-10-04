@@ -5,6 +5,8 @@ module com.example.lab_1 {
 
 
 
-    opens com.example.lab_1 to javafx.fxml;
-    exports com.example.lab_1;
+    opens com.myapp.originalapp to javafx.fxml;
+    exports com.myapp.originalapp;
+    exports com.myapp.originalapp.controller;
+    opens com.myapp.originalapp.controller to javafx.fxml;
 }

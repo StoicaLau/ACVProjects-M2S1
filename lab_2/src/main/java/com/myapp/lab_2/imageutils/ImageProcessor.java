@@ -1,14 +1,13 @@
 package com.myapp.lab_2.imageutils;
 
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+
 
 public class ImageProcessor {
 
@@ -40,13 +39,14 @@ public class ImageProcessor {
      * @return the processed image as a WritableImage
      */
     public WritableImage getProcessedImage() {
-        return this.convertToWritableImage(this.processedImage);
+        return BufferedImageUtils.convertToWritableImage(this.processedImage);
     }
 
     /**
      * Applies a grayscale filter to the processed image.
      */
     public void applyGrayScale() {
+        this.processedImage = BufferedImageUtils.cloneBufferedImage(this.originalImage);
         WritableRaster raster = this.processedImage.getRaster();
         for (int i = 0; i < this.processedImage.getWidth(); i++) {
             for (int j = 0; j < this.processedImage.getHeight(); j++) {
@@ -82,28 +82,5 @@ public class ImageProcessor {
 
     }
 
-    /**
-     * Converts a BufferedImage to a WritableImage for use with JavaFX.
-     *
-     * @param bufferedImage the BufferedImage to convert
-     * @return a WritableImage representation of the given BufferedImage
-     */
-    private WritableImage convertToWritableImage(BufferedImage bufferedImage) {
-        WritableImage writableImage = new WritableImage(bufferedImage.getWidth(), bufferedImage.getHeight());
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-
-        for (int y = 0; y < bufferedImage.getHeight(); y++) {
-            for (int x = 0; x < bufferedImage.getWidth(); x++) {
-                int argb = bufferedImage.getRGB(x, y);
-                int alpha = (argb >> 24) & 0xff;
-                int red = (argb >> 16) & 0xff;
-                int green = (argb >> 8) & 0xff;
-                int blue = argb & 0xff;
-                pixelWriter.setColor(x, y, Color.rgb(red, green, blue, alpha / 255.0));
-            }
-        }
-
-        return writableImage;
-    }
 
 }

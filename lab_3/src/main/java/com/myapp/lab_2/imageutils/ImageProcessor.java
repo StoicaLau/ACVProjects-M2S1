@@ -1,14 +1,13 @@
-package com.myapp.originalapp.imageutils;
+package com.myapp.lab_2.imageutils;
 
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+
 
 public class ImageProcessor {
 
@@ -21,6 +20,7 @@ public class ImageProcessor {
      * processed image
      */
     private BufferedImage processedImage;
+
 
     /**
      * Constructor
@@ -56,6 +56,30 @@ public class ImageProcessor {
                         intensity});
             }
         }
+    }
+
+    /**
+     * Crops a portion of the original image defined by the rectangle formed between the given start (X, Y) and end (X, Y) coordinates.
+     *
+     * @param startX the X-coordinate of the starting point of the selection
+     * @param startY the Y-coordinate of the starting point of the selection
+     * @param endX   the X-coordinate of the ending point of the selection
+     * @param endY   the Y-coordinate of the ending point of the selection
+     */
+    public void cropImage(double startX, double startY, double endX, double endY) {
+        int width = (int) Math.abs(endX - startX);
+        int height = (int) Math.abs(endY - startY);
+        int x = (int) Math.min(startX, endX);
+        int y = (int) Math.min(startY, endY);
+
+        BufferedImage croppedImage = originalImage.getSubimage(x, y, width, height);
+        this.processedImage = new BufferedImage(
+                originalImage.getWidth(),
+                originalImage.getHeight(),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        this.processedImage.createGraphics().drawImage(croppedImage, x, y, null);
+
     }
 
 

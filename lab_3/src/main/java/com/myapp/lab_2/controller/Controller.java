@@ -60,6 +60,8 @@ public class Controller implements Initializable {
      */
     private double startX, startY, endX, endY;
 
+    private double initialX, initialY;
+
 
     /**
      * Used for preset some components
@@ -128,6 +130,48 @@ public class Controller implements Initializable {
         selectionRectangle.setStrokeWidth(2);
         pOriginalImage.getChildren().add(selectionRectangle);
         selectionRectangle.setVisible(true);
+        selectionRectangle.setOnMousePressed(this::onRectanglePressed);
+        selectionRectangle.setOnMouseDragged(this::onRectangleDragged);
+        selectionRectangle.setOnMouseReleased(this::onRectangleReleased);
+
+    }
+
+    /**
+     * Initializes initial coordinates when the rectangle is pressed.
+     *
+     * @param event the mouse event
+     */
+    private void onRectanglePressed(MouseEvent event) {
+        initialX = selectionRectangle.getX() - event.getSceneX();
+        initialY = selectionRectangle.getY() - event.getSceneY();
+    }
+
+    /**
+     * Updates the rectangle's coordinates while dragging.
+     *
+     * @param event the mouse event
+     */
+    private void onRectangleDragged(MouseEvent event) {
+        selectionRectangle.setX(event.getSceneX() + initialX);
+        selectionRectangle.setY(event.getSceneY() + initialY);
+    }
+
+    /**
+     * Calculates and sets new coordinates when the rectangle is released.
+     *
+     * @param event the mouse event
+     */
+    private void onRectangleReleased(MouseEvent event) {
+        double sideLength = selectionRectangle.getHeight();
+        startX = event.getSceneX() + initialX;
+        endX = startX + sideLength;
+        startY = event.getSceneY() + initialY;
+        endY = startY + sideLength;
+
+        selectionRectangle.setX(startX);
+        selectionRectangle.setY(startY);
+
+        cropImage();
     }
 
     /**
@@ -182,7 +226,7 @@ public class Controller implements Initializable {
         double width = Math.abs(endX - startX);
         double height = Math.abs(endY - startY);
         if (width < height) {
-            endY =  startY+width;
+            endY = startY + width;
             height = width;
         } else {
             endX = height + startX;

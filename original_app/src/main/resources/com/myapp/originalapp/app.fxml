@@ -22,7 +22,11 @@
             </StackPane>
             <StackPane prefHeight="700.0" prefWidth="700.0" style="-fx-border-color: black;">
                <children>
-                  <ImageView fx:id="iwResultedImage" fitHeight="480.0" fitWidth="650.0" pickOnBounds="true" preserveRatio="true" />
+                  <Pane fx:id="pResultedImage" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0">
+                     <children>
+                        <ImageView fx:id="iwResultedImage" fitHeight="480.0" fitWidth="650.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </Pane>
                </children>
             </StackPane>
          </children>

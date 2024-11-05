@@ -1,4 +1,4 @@
-package com.myapp.originalapp.imageutils;
+package com.myapp.imageutils;
 
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;

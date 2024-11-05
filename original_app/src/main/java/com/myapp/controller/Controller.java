@@ -1,17 +1,13 @@
-package com.myapp.originalapp.controller;
+package com.myapp.controller;
 
 
-import com.myapp.originalapp.imageutils.ImageProcessor;
+import com.myapp.imageutils.ImageProcessor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.*;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 

@@ -1,8 +1,6 @@
-package com.myapp.originalapp.imageutils;
+package com.myapp.imageutils;
 
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

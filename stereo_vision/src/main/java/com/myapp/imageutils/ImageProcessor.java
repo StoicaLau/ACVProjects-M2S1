@@ -74,8 +74,8 @@ public class ImageProcessor {
         int width = this.leftImage.getWidth();
         int height = this.leftImage.getHeight();
 
-        for (int y1 = 0; y1 < height; y1 += 1) {
-            for (int x1 = 0; x1 < width; x1 += 1) {
+        for (int y1 = 0; y1 < height-blockSize; y1 += 1) {
+            for (int x1 = 0; x1 < width-blockSize; x1 += 1) {
 
                 int[][] block1 = getBlock(this.leftImage, x1, y1, blockSize);
                 if (block1 == null) {
@@ -103,14 +103,14 @@ public class ImageProcessor {
 
         }
 
-//        for (int i = 0; i < matrix.length; i++) {
-//            System.out.print("[");
-//            for (int j = 0; j < matrix[i].length; j++) {
-//                System.out.print(matrix[i][j]);
-//                if (j < matrix[i].length - 1) System.out.print(", ");
-//            }
-//            System.out.println("]");
-//        }
+        for (int i = 0; i < matrix.length; i++) {
+            System.out.print("[");
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j]);
+                if (j < matrix[i].length - 1) System.out.print(", ");
+            }
+            System.out.println("]");
+        }
 
 
     }
@@ -159,7 +159,7 @@ public class ImageProcessor {
         return image;
     }
 
-    private int[][] getBlock(BufferedImage image, int x, int y, int blockSize) {
+    private int[][] getBlockGIF(BufferedImage image, int x, int y, int blockSize) {
         WritableRaster raster = image.getRaster();
         int[][] block = new int[blockSize][blockSize];
         if (x + blockSize > raster.getWidth() || y + blockSize > raster.getHeight()) {
@@ -188,9 +188,33 @@ public class ImageProcessor {
         return block;
     }
 
+    private int[][] getBlock(BufferedImage image, int x, int y, int blockSize) {
+        WritableRaster raster = image.getRaster();
+        int[][] block = new int[blockSize][blockSize];
+//        if (x + blockSize > raster.getWidth() || y + blockSize > raster.getHeight()) {
+//            return null; // Ensure block doesn't exceed image bounds
+//        }
+
+//        IndexColorModel colorModel = (IndexColorModel) image.getColorModel();
+        for (int i = 0; i < blockSize; i++) {
+            for (int j = 0; j < blockSize; j++) {
+
+                int currentX = x + j;
+                int currentY = y + i;
+
+                int[] rgb = raster.getPixel(currentX, currentY, (int[]) null);
+                int gray= (rgb[0] + rgb[1] + rgb[2]) / 3;
+                block[i][j] = gray;
+
+            }
+        }
+        return block;
+    }
+
 
     private int computeSAD(int[][] block1, int[][] block2) {
         int sum = 0;
+        int limit=20;
         for (int i = 0; i < block1.length; i++) {
             for (int j = 0; j < block1[0].length; j++) {
                 sum += Math.abs(block1[i][j] - block2[i][j]);

@@ -80,8 +80,9 @@ public class Controller implements Initializable {
         File defaultDirectory = new File(IMAGE_FOLDER_PATH);
         fileChooser.setInitialDirectory(defaultDirectory);
 
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GIF Image (*.gif)", "*.gif");
-        ;
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GIF Image (*.gif)", "*.gif");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("BMP Image (*.bmp)", "*.bmp");
+
         fileChooser.getExtensionFilters().add(extFilter);
         Stage stage = (Stage) this.btnLoadFirstFrame.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
@@ -109,7 +110,8 @@ public class Controller implements Initializable {
         File defaultDirectory = new File(IMAGE_FOLDER_PATH);
         fileChooser.setInitialDirectory(defaultDirectory);
 
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GIF Image (*.gif)", "*.gif");
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("GIF Image (*.gif)", "*.gif");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("BMP Image (*.bmp)", "*.bmp");
         fileChooser.getExtensionFilters().add(extFilter);
         Stage stage = (Stage) this.btnLoadFirstFrame.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);

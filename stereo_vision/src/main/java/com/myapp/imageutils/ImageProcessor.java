@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,12 @@ import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.util.concurrent.Callable; 
+import java.util.concurrent.ExecutorService; 
+import java.util.concurrent.Executors; 
+import java.util.concurrent.Future; 
+
 
 /**
  * vad cu cat sa deplasat
@@ -73,17 +80,24 @@ public class ImageProcessor {
         this.matrix = new int[this.rightImage.getHeight()][this.rightImage.getWidth()];
     }
 
-    public void computeMotion(int blockSize, int searchZoneSize) {
-        Instant start = Instant.now();
-        this.matrix = new int[this.rightImage.getHeight()][this.rightImage.getWidth()];
+public void computeMotion(int blockSize, int searchZoneSize) {
+    Instant start = Instant.now(); // Înregistrează timpul de început
 
-        int width = this.leftImage.getWidth();
-        int height = this.leftImage.getHeight();
+    this.matrix = new int[this.rightImage.getHeight()][this.rightImage.getWidth()];
 
-        for (int y1 = 0; y1 < height-blockSize; y1 += 1) {
-            for (int x1 = 0; x1 < width-blockSize; x1 += 1) {
+    int width = this.leftImage.getWidth();
+    int height = this.leftImage.getHeight();
 
-                int[][] block1 = getBlock(this.leftImage, x1, y1, blockSize);
+    ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    List<Future<Void>> futures = new ArrayList<>();
+
+    for (int y1 = 0; y1 < height - blockSize; y1 += blockSize/2) {
+        final int fy1 = y1;
+        Callable<Void> task = () -> {
+            for (int x1 = 0; x1 < width - blockSize; x1 += 1) {
+                Pair <Integer,int[][]> result=getBlock(leftImage, x1, fy1, blockSize);
+                int[][] block1 =result.getValue();
+                int sumBlock1=result.getKey();
                 if (block1 == null) {
                     continue;
                 }
@@ -93,30 +107,46 @@ public class ImageProcessor {
                 int resultedX = x1;
 
                 for (int x2 = x1; x2 >= startX; x2 -= 1) {
-//
-                    int[][] block2 = getBlock(this.rightImage, x2, y1, blockSize);
+                     result=getBlock(this.rightImage, x2, fy1, blockSize);
+                    int[][] block2 = result.getValue();
+                    int sumBlock2=result.getKey();
                     if (block2 != null) {
                         int currentValue = computeSAD(block1, block2);
+                        //int currentValue=Math.abs(sumBlock1-sumBlock2);
                         if (currentValue < min) {
                             min = currentValue;
                             resultedX = x2;
                         }
-                        
-                    }
-                    if(min==0){
-                        x2=startX-1;
                     }
                 }
+                int starty=Math.max(0,fy1-blockSize/2);
+                int endy=Math.min(fy1+blockSize/2, height);
+                for(int currenty=starty;currenty<fy1+blockSize/2;currenty++)
+                {
+                    this.matrix[currenty][x1] = x1 - resultedX;
+                }
 
-                this.matrix[y1][x1] = x1 - resultedX;
             }
+            return null;
+        };
+        futures.add(executor.submit(task));
+    }
 
+    for (Future<Void> future : futures) {
+        try {
+            future.get(); // Așteaptă terminarea fiecărui task
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Instant end = Instant.now(); 
-        Duration timeElapsed = Duration.between(start, end); 
-        System.out.println("Timpul de executie: " + timeElapsed.getSeconds() + " secunde");
-    
-    } 
+    }
+
+    executor.shutdown();
+
+    Instant end = Instant.now(); // Înregistrează timpul de sfârșit
+    Duration timeElapsed = Duration.between(start, end); // Calculează durata
+    System.out.println("Timpul de execuție: " + timeElapsed.toMillis() / 1000.0 + " secunde");
+}
+
     
  
     
@@ -194,9 +224,10 @@ public class ImageProcessor {
         return block;
     }
 
-    private int[][] getBlock(BufferedImage image, int x, int y, int blockSize) {
+    private Pair<Integer,int[][]> getBlock(BufferedImage image, int x, int y, int blockSize) {
         WritableRaster raster = image.getRaster();
         int[][] block = new int[blockSize][blockSize];
+        int sum=0;
         for (int i = 0; i < blockSize; i++) {
             for (int j = 0; j < blockSize; j++) {
 
@@ -206,10 +237,10 @@ public class ImageProcessor {
                 int[] rgb = raster.getPixel(currentX, currentY, (int[]) null);
                 int gray= (rgb[0] + rgb[1] + rgb[2]) / 3;
                 block[i][j] = gray;
-
+                sum+=gray;
             }
         }
-        return block;
+        return new Pair<>(sum, block);
     }
 
 

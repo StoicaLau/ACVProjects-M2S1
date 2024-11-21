@@ -29,7 +29,7 @@ public class Controller implements Initializable {
     /**
      * image folder path
      */
-    public static final String IMAGE_FOLDER_PATH = "C:\\Users\\stoic\\Desktop\\master\\An2\\Sem1\\Advances in Computer Vision\\ACVProjects\\stereo_vision\\input";
+    public static final String IMAGE_FOLDER_PATH = "C:\\Users\\PC\\Documents\\GitHub\\ACVProjects-M2S1\\stereo_vision\\input";
 
     @FXML
     private Button btnLoadFirstFrame;

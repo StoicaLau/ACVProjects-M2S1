@@ -11,6 +11,8 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ import java.util.List;
  * iar minimul cu negru ,tot restul se face o nuanta
  * imaginea generata poata fi in nivele de gri
  * matricea o sa aiba dimensiune imagini
+ * /15
  */
 
 public class ImageProcessor {
@@ -71,6 +74,9 @@ public class ImageProcessor {
     }
 
     public void computeMotion(int blockSize, int searchZoneSize) {
+        Instant start = Instant.now();
+        this.matrix = new int[this.rightImage.getHeight()][this.rightImage.getWidth()];
+
         int width = this.leftImage.getWidth();
         int height = this.leftImage.getHeight();
 
@@ -95,6 +101,10 @@ public class ImageProcessor {
                             min = currentValue;
                             resultedX = x2;
                         }
+                        
+                    }
+                    if(min==0){
+                        x2=startX-1;
                     }
                 }
 
@@ -102,18 +112,14 @@ public class ImageProcessor {
             }
 
         }
-
-        for (int i = 0; i < matrix.length; i++) {
-            System.out.print("[");
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j]);
-                if (j < matrix[i].length - 1) System.out.print(", ");
-            }
-            System.out.println("]");
-        }
-
-
-    }
+        Instant end = Instant.now(); 
+        Duration timeElapsed = Duration.between(start, end); 
+        System.out.println("Timpul de executie: " + timeElapsed.getSeconds() + " secunde");
+    
+    } 
+    
+ 
+    
 
     public Image getImage() {
         int width = this.leftImage.getWidth();
@@ -150,7 +156,7 @@ public class ImageProcessor {
                     color = Color.WHITE;
                 } else {
                     double grayScale = (double) (value - min) / (max - min);
-                    color = Color.GRAY;
+                    color = new Color(grayScale,grayScale,grayScale,1);
                 }
                 pixelWriter.setColor(x, y, color);
             }
@@ -191,11 +197,6 @@ public class ImageProcessor {
     private int[][] getBlock(BufferedImage image, int x, int y, int blockSize) {
         WritableRaster raster = image.getRaster();
         int[][] block = new int[blockSize][blockSize];
-//        if (x + blockSize > raster.getWidth() || y + blockSize > raster.getHeight()) {
-//            return null; // Ensure block doesn't exceed image bounds
-//        }
-
-//        IndexColorModel colorModel = (IndexColorModel) image.getColorModel();
         for (int i = 0; i < blockSize; i++) {
             for (int j = 0; j < blockSize; j++) {
 
@@ -214,7 +215,6 @@ public class ImageProcessor {
 
     private int computeSAD(int[][] block1, int[][] block2) {
         int sum = 0;
-        int limit=20;
         for (int i = 0; i < block1.length; i++) {
             for (int j = 0; j < block1[0].length; j++) {
                 sum += Math.abs(block1[i][j] - block2[i][j]);
